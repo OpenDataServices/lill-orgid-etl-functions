@@ -1,12 +1,12 @@
-import lillorgid.et.iati.datadump_code4iati
+import lillorgid.etl.et.iati.datadump_code4iati
 import tempfile
-import lillorgid.et.logging
+import lillorgid.etl.logging
 
-lillorgid.et.logging.log_to_azure()
+lillorgid.etl.logging.log_to_azure()
 
 def main(context):
-    lillorgid.et.logging.logger.info("Function function_iati_datadump_code4iati called")
-    worker = lillorgid.et.iati.datadump_code4iati.IATIDataDump(tempfile.mkdtemp(prefix="lillorgidet"))
+    lillorgid.etl.logging.logger.info("Function function_iati_datadump_code4iati called")
+    worker = lillorgid.etl.et.iati.datadump_code4iati.IATIDataDump(tempfile.mkdtemp(prefix="lillorgidet"))
     worker.download_data()
     worker.extract_zip()
     worker.extract_transform()

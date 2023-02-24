@@ -3,7 +3,7 @@ import json
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 from azure.identity import DefaultAzureCredential
 import os
-from  lillorgid.et import settings
+from  lillorgid.etl import settings
 
 
 class JSONLinesWriter:

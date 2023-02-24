@@ -3,7 +3,7 @@ import sys
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 
 
-logger = logging.getLogger("lill-orgid-extract-and-transform")
+logger = logging.getLogger("lill-orgid-etl")
 
 
 def python_logging_to_stdout():

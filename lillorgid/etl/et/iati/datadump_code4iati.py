@@ -5,8 +5,8 @@ import xml.etree.ElementTree
 import datetime
 import requests
 
-import lillorgid.et.lib
-import lillorgid.et.logging
+import lillorgid.etl.et.lib
+import lillorgid.etl.logging
 
 class IATIDataDump:
 
@@ -16,7 +16,7 @@ class IATIDataDump:
         self.tmp_dir_name = tmp_dir_name
 
     def download_data(self):
-        lillorgid.et.logging.logger.info("IATIDataDump - Start download_data")
+        lillorgid.etl.logging.logger.info("IATIDataDump - Start download_data")
         zip_file_name = os.path.join(self.tmp_dir_name, "iati-data-main.zip")
         url = "https://gitlab.com/codeforIATI/iati-data/-/archive/main/iati-data-main.zip"
         with requests.get(url, stream=True) as r:
@@ -24,24 +24,24 @@ class IATIDataDump:
             with open(zip_file_name, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
-        lillorgid.et.logging.logger.info("IATIDataDump - Finished download_data")
+        lillorgid.etl.logging.logger.info("IATIDataDump - Finished download_data")
 
 
     def extract_zip(self):
-        lillorgid.et.logging.logger.info("IATIDataDump - Start extract_zip")
+        lillorgid.etl.logging.logger.info("IATIDataDump - Start extract_zip")
         zip_file_name = os.path.join(self.tmp_dir_name, "iati-data-main.zip")
         with zipfile.ZipFile(zip_file_name, 'r') as zip_ref:
             zip_ref.extractall(self.tmp_dir_name)
-        lillorgid.et.logging.logger.info("IATIDataDump - Finished extract_zip")
+        lillorgid.etl.logging.logger.info("IATIDataDump - Finished extract_zip")
 
 
     def extract_transform(self):
-        lillorgid.et.logging.logger.info("IATIDataDump - Start extract_transform")
+        lillorgid.etl.logging.logger.info("IATIDataDump - Start extract_transform")
         tmp_data_dir = os.path.join(self.tmp_dir_name, "iati-data-main", "data")
-        with lillorgid.et.lib.JSONLinesWriter(self.tmp_dir_name, os.path.join("iati", "datadump.code4iati", datetime.datetime.utcnow().isoformat())) as writer:
+        with lillorgid.etl.et.lib.JSONLinesWriter(self.tmp_dir_name, os.path.join("iati", "datadump.code4iati", datetime.datetime.utcnow().isoformat())) as writer:
             for dir_name in os.listdir(tmp_data_dir):
                 for file_name in os.listdir(os.path.join(tmp_data_dir, dir_name)):
-                    lillorgid.et.logging.logger.info("IATIDataDump - extract_transform - Starting Directory: "+ dir_name + " File: " + file_name)
+                    lillorgid.etl.logging.logger.info("IATIDataDump - extract_transform - Starting Directory: "+ dir_name + " File: " + file_name)
                     tree = xml.etree.ElementTree.parse(os.path.join(tmp_data_dir, dir_name, file_name))
                     root = tree.getroot()
                     if root.tag == 'iati-activities':
@@ -68,11 +68,11 @@ class IATIDataDump:
 
                     break
                 break
-        lillorgid.et.logging.logger.info("IATIDataDump - Finished extract_transform")
+        lillorgid.etl.logging.logger.info("IATIDataDump - Finished extract_transform")
 
 
 if __name__ == "__main__":
-    lillorgid.et.logging.python_logging_to_stdout()
+    lillorgid.etl.logging.python_logging_to_stdout()
 
     parser = argparse.ArgumentParser()
 
