@@ -1,0 +1,6 @@
+requests
+azure-storage-blob
+azure-identity
+azure-functions
+azure-functions-durable
+opencensus-ext-azure
