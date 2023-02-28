@@ -63,7 +63,7 @@ class IATIDataDump:
                                     'file': file_name,
                                 }
                                 # TODO split list and id
-                                writer.write(org_reference, org_reference, meta_data)
+                                writer.write(org_reference, org_reference, "activity-"+iati_identifier, url=None, meta_data=meta_data)
 
 
                     break

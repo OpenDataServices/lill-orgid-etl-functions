@@ -34,8 +34,9 @@ class JSONLinesWriter:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._close_and_upload_current_file()
 
-    def write(self, list, id, meta_data={}):
-        self.fp.write(json.dumps({"l":list, "i":id, "meta": meta_data})+"\n")
+    def write(self, list, id, source_id, url=None, meta_data={}):
+        d = {"l":list, "i":id, "sid": source_id, "u":url, "meta": meta_data}
+        self.fp.write(json.dumps(d)+"\n")
         self.data_counter += 1
         if self.data_counter > self.pagesize:
             self._close_and_upload_current_file()
