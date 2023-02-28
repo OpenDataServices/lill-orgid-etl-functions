@@ -6,7 +6,9 @@ import os
 from  lillorgid.etl import settings
 import lillorgid.etl.logging
 import tempfile
-
+import sqlite3
+import requests
+import psycopg
 
 class Reader:
 
@@ -74,3 +76,93 @@ class Runner:
 
 
 
+
+def load_lists():
+    # Get DB
+    tempdir = tempfile.mkdtemp(prefix="lillorgidet")
+    tempfilename = os.path.join(tempdir, "db.sqlite")
+    url = "https://org-id-register.netlify.app/database.sqlite"
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(tempfilename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+
+    # Let's go
+    with sqlite3.connect(tempfilename) as source_conn:
+        source_conn.row_factory = sqlite3.Row
+        with psycopg.connect(settings.AZURE_POSTGRES_CONNECTION_STRING) as destination_conn:
+            source_cursor = source_conn.cursor()
+            with destination_conn.cursor() as destination_cursor:
+
+                res = source_cursor.execute("SELECT * FROM record_lists")
+                for row in res.fetchall():
+
+                    destination_cursor.execute(
+                        "INSERT INTO list (id) VALUES (%s) ON CONFLICT (id) DO NOTHING",
+                        [row['id']]
+                    )
+
+                    destination_cursor.execute(
+                        "UPDATE list SET "+
+                        "field_title_en=%s, "+
+                        "field_title_local=%s, "+
+                        "field_url=%s, "+
+                        "field_description_en=%s, "+
+                        "field_coverage=%s, "+
+                        #"field_subnationalCoverage=%s, "+
+                        "field_structure=%s, "+
+                        "field_sector=%s, "+
+                        "field_confirmed=%s, "+
+                        "field_deprecated=%s, "+
+                        #"field_listType=%s, "+
+                        #"field_access_availableOnline=%s, "+
+                        #"field_access_onlineAccessDetails=%s, "+
+                        #"field_access_publicDatabase=%s, "+
+                        #"field_access_guidanceOnLocatingIds=%s, "+
+                        #"field_access_exampleIdentifiers=%s, "+
+                        "field_access_languages=%s, "+
+                        "field_data_availability=%s, "+
+                        #"field_data_dataAccessDetails=%s, "+
+                        "field_data_features=%s, "+
+                        #"field_data_licenseStatus=%s, "+
+                        #"field_data_licenseDetails=%s, "+
+                        "field_meta_source=%s, "+
+                        #"field_meta_lastUpdated=%s, "+
+                        "field_links_opencorporates=%s, "+
+                        "field_links_wikipedia=%s "+
+                        #"field_formerPrefixes=%s "+
+                        "WHERE id=%s",
+                        (
+                            row['field_title_en'],
+                            row['field_title_local'],
+                            row['field_url'],
+                            row['field_description_en'],
+                            row['field_coverage'],
+                            #row['field_subnationalCoverage'],
+                            row['field_structure'],
+                            row['field_sector'],
+                            row['field_confirmed'],
+                            row['field_deprecated'],
+                            #row['field_listType'],
+                            #row['field_access_availableOnline'],
+                            #row['field_access_onlineAccessDetails'],
+                            #row['field_access_publicDatabase'],
+                            #row['field_access_guidanceOnLocatingIds'],
+                            #row['field_access_exampleIdentifiers'],
+                            row['field_access_languages'],
+                            row['field_data_availability'],
+                            #row['field_data_dataAccessDetails'],
+                            row['field_data_features'],
+                            #row['field_data_licenseStatus'],
+                            #row['field_data_licenseDetails'],
+                            row['field_meta_source'],
+                            #row['field_meta_lastUpdated'],
+                            row['field_links_opencorporates'],
+                            row['field_links_wikipedia'],
+                            #row['field_formerPrefixes'],
+                            row['id']
+                        )
+                    )
+
+                    destination_conn.commit()

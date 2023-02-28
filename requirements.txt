@@ -89,6 +89,8 @@ protobuf==4.22.0
     #   googleapis-common-protos
 psutil==5.9.4
     # via opencensus-ext-azure
+psycopg==3.1.8
+    # via -r requirements.in
 pyasn1==0.4.8
     # via
     #   pyasn1-modules
@@ -124,6 +126,7 @@ typing-extensions==4.5.0
     # via
     #   azure-core
     #   azure-storage-blob
+    #   psycopg
 urllib3==1.26.14
     # via requests
 yarl==1.8.2

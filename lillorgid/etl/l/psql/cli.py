@@ -9,7 +9,9 @@ if __name__ == "__main__":
 
     subparsers = parser.add_subparsers(dest="subparser_name")
 
-    extract_zip_parser = subparsers.add_parser("load")
+    load_parser = subparsers.add_parser("load")
+
+    load_list_parser = subparsers.add_parser("loadlist")
 
     args = parser.parse_args()
 
@@ -20,3 +22,6 @@ if __name__ == "__main__":
         )
         worker.go()
 
+    elif args.subparser_name == "loadlist":
+
+        lillorgid.etl.l.psql.lib.load_lists()
