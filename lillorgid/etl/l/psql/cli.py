@@ -18,7 +18,8 @@ if __name__ == "__main__":
     if args.subparser_name == "load":
 
         worker = lillorgid.etl.l.psql.lib.Runner(
-            lillorgid.etl.l.psql.lib.Reader()
+            lillorgid.etl.l.psql.lib.Reader(),
+            lillorgid.etl.l.psql.lib.Writer()
         )
         worker.go()
 

@@ -56,10 +56,43 @@ class Reader:
 
         return out
 
+class Writer:
+
+    def __init__(self):
+        self.connection = psycopg.connect(lillorgid.etl.settings.AZURE_POSTGRES_CONNECTION_STRING, row_factory=psycopg.rows.dict_row)
+        self.list_ids = []
+        with self.connection.cursor() as cur:
+            res = cur.execute("SELECT id FROM list")
+            self.list_ids = [r['id'].lower() for r in res]
+
+    def save_data(self, data_standard, scraper, data_dump_id, data):
+
+        with self.connection.cursor() as cur:
+
+            # TODO prepared queries probably faster
+            for d in data:
+                if d.get('l') and d['l'].lower() in self.list_ids:
+                     cur.execute(
+                        "INSERT INTO data (list, id, data_standard, scraper, source_id, url, meta) VALUES (%s, %s, %s, %s, %s, %s, %s) "+
+                         "ON CONFLICT (list, id, data_standard, source_id) DO UPDATE SET scraper = EXCLUDED.scraper, url = EXCLUDED.url, meta = EXCLUDED.meta",
+                        (
+                            d['l'].lower(),
+                            d['i'],
+                            data_standard,
+                            scraper,
+                            d['sid'],
+                            d['u'],
+                            json.dumps(d['meta'])
+                        )
+                     )
+
+            self.connection.commit()
+
 class Runner:
 
-    def __init__(self, reader):
+    def __init__(self, reader, writer):
         self.reader = reader
+        self.writer = writer
 
 
     def go(self):
@@ -72,7 +105,19 @@ class Runner:
                 for data_file in self.reader.get_data_files_in_data_standard_and_scraper_and_dump(data_standard, scraper, data_dump_id):
                     lillorgid.etl.logging.logger.info("Load Postgres  - found data standard " + data_standard + " scraper "+ scraper + " data dump "+ data_dump_id + " data file "+ data_file)
                     local_temp_filename = self.reader.download_data_file_to_temp_file_name(data_standard, scraper, data_dump_id, data_file)
-                    print(local_temp_filename)
+                    self._process_file(data_standard, scraper, data_dump_id, local_temp_filename)
+                    os.remove(local_temp_filename)
+
+    def _process_file(self, data_standard, scraper, data_dump_id, local_temp_filename):
+        lillorgid.etl.logging.logger.info(
+            "Load Postgres - processing local tmp file " + local_temp_filename)
+        data = []
+        with open(local_temp_filename) as f:
+            for line in f:
+                json_data = json.loads(line)
+                data.append(json_data)
+        self.writer.save_data(data_standard, scraper, data_dump_id, data)
+
 
 
 
@@ -166,3 +211,4 @@ def load_lists():
                     )
 
                     destination_conn.commit()
+
