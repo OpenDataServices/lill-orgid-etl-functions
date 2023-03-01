@@ -71,9 +71,9 @@ class IATIDataDump:
                     except xml.etree.ElementTree.ParseError:
                         # TODO log
                         pass
-
-                    break
-                break
+                    # Comment out these 2 breaks to only process a small amount
+                    #break
+                #break
         lillorgid.etl.logging.logger.info("IATIDataDump - Finished extract_transform")
 
 
