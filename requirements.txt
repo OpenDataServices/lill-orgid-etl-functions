@@ -89,8 +89,10 @@ protobuf==4.22.0
     #   googleapis-common-protos
 psutil==5.9.4
     # via opencensus-ext-azure
-psycopg==3.1.8
+psycopg[binary]==3.1.8
     # via -r requirements.in
+psycopg-binary==3.1.8
+    # via psycopg
 pyasn1==0.4.8
     # via
     #   pyasn1-modules
