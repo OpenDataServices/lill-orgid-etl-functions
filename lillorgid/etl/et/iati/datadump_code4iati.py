@@ -5,6 +5,7 @@ import xml.etree.ElementTree
 import datetime
 import requests
 
+import lillorgid.etl.list_and_id_extractor
 import lillorgid.etl.et.lib
 import lillorgid.etl.logging
 
@@ -38,6 +39,7 @@ class IATIDataDump:
     def extract_transform(self):
         lillorgid.etl.logging.logger.info("IATIDataDump - Start extract_transform")
         tmp_data_dir = os.path.join(self.tmp_dir_name, "iati-data-main", "data")
+        list_and_id_extractor = lillorgid.etl.list_and_id_extractor.ListAndIdExtractor()
         with lillorgid.etl.et.lib.JSONLinesWriter(self.tmp_dir_name, os.path.join("iati", "datadump.code4iati", datetime.datetime.utcnow().isoformat())) as writer:
             for dir_name in os.listdir(tmp_data_dir):
                 for file_name in os.listdir(os.path.join(tmp_data_dir, dir_name)):
@@ -57,13 +59,14 @@ class IATIDataDump:
                             # TODO look up all the other places org ID's could be and put in!
                             # output info
                             for org_reference in org_references:
-                                meta_data = {
-                                    'activity-id': iati_identifier,
-                                    'dir': dir_name,
-                                    'file': file_name,
-                                }
-                                # TODO split list and id
-                                writer.write(org_reference, org_reference, "activity-"+iati_identifier, url=None, meta_data=meta_data)
+                                (list, id, known_list) = list_and_id_extractor.process(org_reference)
+                                if known_list:
+                                    meta_data = {
+                                        'activity-id': iati_identifier,
+                                        'dir': dir_name,
+                                        'file': file_name,
+                                    }
+                                    writer.write(list, id, "activity-"+iati_identifier, url=None, meta_data=meta_data)
 
 
                     break
