@@ -53,21 +53,23 @@ class IATIDataDump:
                                 iati_identifier = None
                                 org_references = []
                                 # get info
-                                iati_identifier = activity.find('iati-identifier').text.strip()
+                                if activity.find('iati-identifier') != None:
+                                    iati_identifier = activity.find('iati-identifier').text.strip()
                                 for field_name in ['reporting-org','participating-org']:
                                     for org_reference_xml in activity.findall(field_name):
                                         org_references.append(org_reference_xml.attrib.get('ref'))
                                 # TODO look up all the other places org ID's could be and put in!
                                 # output info
-                                for org_reference in org_references:
-                                    (list, id, known_list) = list_and_id_extractor.process(org_reference)
-                                    if known_list:
-                                        meta_data = {
-                                            'activity-id': iati_identifier,
-                                            'dir': dir_name,
-                                            'file': file_name,
-                                        }
-                                        writer.write(list, id, "activity-"+iati_identifier, url=None, meta_data=meta_data)
+                                if iati_identifier:
+                                    for org_reference in org_references:
+                                        (list, id, known_list) = list_and_id_extractor.process(org_reference)
+                                        if known_list:
+                                            meta_data = {
+                                                'activity-id': iati_identifier,
+                                                'dir': dir_name,
+                                                'file': file_name,
+                                            }
+                                            writer.write(list, id, "activity-"+iati_identifier, url=None, meta_data=meta_data)
                     except xml.etree.ElementTree.ParseError:
                         # TODO log
                         pass
