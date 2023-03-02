@@ -12,6 +12,9 @@ class ListAndIdExtractor:
             self.lists = [i['code'].lower() for i in data['lists']]
 
     def process(self, list_and_id: str, seperator:str='-'):
+        # Sanity check incoming data
+        if not list_and_id:
+            return (None, None, False)
         # Is this a known list?
         for l in self.lists:
             if list_and_id.lower().startswith(l + seperator):
