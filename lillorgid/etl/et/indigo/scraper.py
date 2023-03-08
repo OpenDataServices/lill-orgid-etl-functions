@@ -47,7 +47,7 @@ class INDIGOScraper:
                             meta_data = {
                                 'indigo_organisation_id': indigo_org_id
                             }
-                            writer.write(orgidlist, id, org_id, url=None, meta_data=meta_data)
+                            writer.write(orgidlist, id, indigo_org_id, url=None, meta_data=meta_data)
         lillorgid.etl.logging.logger.info("INDIGOScraper - End")
 
 if __name__ == "__main__":
