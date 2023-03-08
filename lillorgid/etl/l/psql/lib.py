@@ -98,15 +98,18 @@ class Runner:
     def go(self):
         for data_standard in self.reader.list_data_standards():
             lillorgid.etl.logging.logger.info("Load Postgres - found data standard "+ data_standard)
-            for scraper in self.reader.list_scrapers_for_data_standard(data_standard):
-                lillorgid.etl.logging.logger.info("Load Postgres - found data standard " + data_standard + " scraper "+ scraper)
-                data_dump_id = self.reader.get_latest_data_for_data_standard_and_scraper(data_standard, scraper)
-                lillorgid.etl.logging.logger.info("Load Postgres  - found data standard " + data_standard + " scraper "+ scraper + " data dump "+ data_dump_id)
-                for data_file in self.reader.get_data_files_in_data_standard_and_scraper_and_dump(data_standard, scraper, data_dump_id):
-                    lillorgid.etl.logging.logger.info("Load Postgres  - found data standard " + data_standard + " scraper "+ scraper + " data dump "+ data_dump_id + " data file "+ data_file)
-                    local_temp_filename = self.reader.download_data_file_to_temp_file_name(data_standard, scraper, data_dump_id, data_file)
-                    self._process_file(data_standard, scraper, data_dump_id, local_temp_filename)
-                    os.remove(local_temp_filename)
+            self.go_data_standard(data_standard)
+
+    def go_data_standard(self, data_standard):
+        for scraper in self.reader.list_scrapers_for_data_standard(data_standard):
+            lillorgid.etl.logging.logger.info("Load Postgres - found data standard " + data_standard + " scraper "+ scraper)
+            data_dump_id = self.reader.get_latest_data_for_data_standard_and_scraper(data_standard, scraper)
+            lillorgid.etl.logging.logger.info("Load Postgres  - found data standard " + data_standard + " scraper "+ scraper + " data dump "+ data_dump_id)
+            for data_file in self.reader.get_data_files_in_data_standard_and_scraper_and_dump(data_standard, scraper, data_dump_id):
+                lillorgid.etl.logging.logger.info("Load Postgres  - found data standard " + data_standard + " scraper "+ scraper + " data dump "+ data_dump_id + " data file "+ data_file)
+                local_temp_filename = self.reader.download_data_file_to_temp_file_name(data_standard, scraper, data_dump_id, data_file)
+                self._process_file(data_standard, scraper, data_dump_id, local_temp_filename)
+                os.remove(local_temp_filename)
 
     def _process_file(self, data_standard, scraper, data_dump_id, local_temp_filename):
         lillorgid.etl.logging.logger.info(
