@@ -3,6 +3,7 @@ import lillorgid.etl.l.psql.lib
 import lillorgid.etl.et.iati.datadump_code4iati
 import lillorgid.etl.et.ocds.downloads_odsc
 import lillorgid.etl.l.psql.lib
+import lillorgid.etl.et.indigo.scraper
 
 import tempfile
 
@@ -22,6 +23,11 @@ lillorgid.etl.logging.logger.info("Docker - OCDS Downloads!")
 worker = lillorgid.etl.et.ocds.downloads_odsc.OCDSDataDump(tempfile.mkdtemp(prefix="lillorgiddownloads_odsc"))
 worker.download_data()
 worker.extract_transform()
+del worker
+
+lillorgid.etl.logging.logger.info("Docker - INDIGO!")
+worker = lillorgid.etl.et.indigo.scraper.INDIGOScraper(tempfile.mkdtemp(prefix="lillorgidindigo"))
+worker.go()
 del worker
 
 lillorgid.etl.logging.logger.info("Docker - Load all data!")
