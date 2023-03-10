@@ -30,6 +30,8 @@ worker = lillorgid.etl.et.indigo.scraper.INDIGOScraper(tempfile.mkdtemp(prefix="
 worker.go()
 del worker
 
+# TODO Three Sixty Giving
+
 lillorgid.etl.logging.logger.info("Docker - Load all data!")
 worker = lillorgid.etl.l.psql.lib.Runner(
     lillorgid.etl.l.psql.lib.Reader(),
