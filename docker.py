@@ -1,7 +1,6 @@
 import lillorgid.etl.logging
 import lillorgid.etl.l.psql.lib
 import lillorgid.etl.et.iati.datadump_code4iati
-import lillorgid.etl.et.ocds.downloads_odsc
 import lillorgid.etl.l.psql.lib
 import lillorgid.etl.et.indigo.scraper
 import lillorgid.etl.et.threesixtygiving.datastore
