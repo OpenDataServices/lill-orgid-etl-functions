@@ -51,17 +51,17 @@ class IATIDataDump:
                             for activity in root.findall('iati-activity'):
                                 # set up vars
                                 iati_identifier = None
-                                org_references = []
+                                org_references = {}
                                 # get info
                                 if activity.find('iati-identifier') != None:
                                     iati_identifier = activity.find('iati-identifier').text.strip()
                                 for field_name in ['reporting-org','participating-org']:
                                     for org_reference_xml in activity.findall(field_name):
-                                        org_references.append(org_reference_xml.attrib.get('ref'))
+                                        org_references[org_reference_xml.attrib.get('ref')] = org_reference_xml.find('narrative').text.strip()
                                 # TODO look up all the other places org ID's could be and put in!
                                 # output info
                                 if iati_identifier:
-                                    for org_reference in org_references:
+                                    for org_reference, org_name in org_references.items():
                                         (list, id, known_list) = list_and_id_extractor.process(org_reference)
                                         if known_list:
                                             meta_data = {
@@ -69,7 +69,7 @@ class IATIDataDump:
                                                 'dir': dir_name,
                                                 'file': file_name,
                                             }
-                                            writer.write(list, id, "activity-"+iati_identifier, url=None, meta_data=meta_data)
+                                            writer.write(list, id, "activity-"+iati_identifier, org_name, url=None, meta_data=meta_data)
                     except xml.etree.ElementTree.ParseError:
                         # TODO log
                         pass

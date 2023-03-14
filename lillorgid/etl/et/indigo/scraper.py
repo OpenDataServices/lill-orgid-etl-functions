@@ -30,6 +30,7 @@ class INDIGOScraper:
                 r.raise_for_status()
                 org_ids = set()
                 data = r.json().get('organisation', {})
+                org_name = data.get('data', {}).get('name', {}).get('value','')
                 if data.get('data', {}).get('org-ids'):
                     # Primary?
                     if data.get('data').get('org-ids').get('primary', {}).get('value'):
@@ -47,7 +48,7 @@ class INDIGOScraper:
                             meta_data = {
                                 'indigo_organisation_id': indigo_org_id
                             }
-                            writer.write(orgidlist, id, indigo_org_id, url=None, meta_data=meta_data)
+                            writer.write(orgidlist, id, indigo_org_id, org_name, url=None, meta_data=meta_data)
         lillorgid.etl.logging.logger.info("INDIGOScraper - End")
 
 if __name__ == "__main__":

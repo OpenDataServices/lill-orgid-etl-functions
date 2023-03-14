@@ -33,7 +33,7 @@ class ThreeSixtyGivingDataStore:
                                     meta_data = {
                                         'grant_id': row['grant_id']
                                     }
-                                    writer.write(orgidlist, id, row['grant_id'], url=None, meta_data=meta_data)
+                                    writer.write(orgidlist, id, row['grant_id'], recipient_organization.get('name',''), url=None, meta_data=meta_data)
 
                     # Funders - could do in block above or look at  db_funder table
                     # TODO
