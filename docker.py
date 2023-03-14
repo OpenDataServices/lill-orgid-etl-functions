@@ -19,12 +19,6 @@ worker.extract_zip()
 worker.extract_transform()
 del worker
 
-lillorgid.etl.logging.logger.info("Docker - OCDS Downloads!")
-worker = lillorgid.etl.et.ocds.downloads_odsc.OCDSDataDump(tempfile.mkdtemp(prefix="lillorgiddownloads_odsc"))
-worker.download_data()
-worker.extract_transform()
-del worker
-
 lillorgid.etl.logging.logger.info("Docker - INDIGO!")
 worker = lillorgid.etl.et.indigo.scraper.INDIGOScraper(tempfile.mkdtemp(prefix="lillorgidindigo"))
 worker.go()
