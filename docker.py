@@ -4,6 +4,7 @@ import lillorgid.etl.et.iati.datadump_code4iati
 import lillorgid.etl.et.ocds.downloads_odsc
 import lillorgid.etl.l.psql.lib
 import lillorgid.etl.et.indigo.scraper
+import lillorgid.etl.et.threesixtygiving.datastore
 
 import tempfile
 
@@ -24,7 +25,10 @@ worker = lillorgid.etl.et.indigo.scraper.INDIGOScraper(tempfile.mkdtemp(prefix="
 worker.go()
 del worker
 
-# TODO Three Sixty Giving
+lillorgid.etl.logging.logger.info("Docker - Three Sixty Giving!")
+worker = lillorgid.etl.et.threesixtygiving.datastore.ThreeSixtyGivingDataStore(tempfile.mkdtemp(prefix="lillorgidthreesixtygiving"))
+worker.go()
+del worker
 
 lillorgid.etl.logging.logger.info("Docker - Load all data!")
 worker = lillorgid.etl.l.psql.lib.Runner(
