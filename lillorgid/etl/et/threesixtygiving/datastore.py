@@ -23,7 +23,7 @@ class ThreeSixtyGivingDataStore:
             with psycopg.connect(settings.THREESIXTYGIVING_DATASTORE_POSTGRES_CONNECTION_STRING, row_factory=psycopg.rows.dict_row) as destination_conn:
                 with destination_conn.cursor() as destination_cursor:
 
-                    res = destination_cursor.execute("select * from view_latest_grant where (data->'recipientOrganization'->0->'id')::text = '\"GB-CHC-1044940\"'")
+                    res = destination_cursor.execute("select data, grant_id from view_latest_grant")  #  where (data->'recipientOrganization'->0->'id')::text = '\"GB-CHC-1044940\"'
                     for row in res.fetchall():
                         for recipient_organization in row['data'].get('recipientOrganization', []):
                             org_id = recipient_organization.get('id')
