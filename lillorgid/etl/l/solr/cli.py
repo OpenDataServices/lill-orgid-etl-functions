@@ -12,8 +12,19 @@ if __name__ == "__main__":
 
     load_list_parser = subparsers.add_parser("loadlist")
 
+    load_parser = subparsers.add_parser("load")
+
     args = parser.parse_args()
 
     if args.subparser_name == "loadlist":
 
         lillorgid.etl.l.solr.lib.load_lists()
+
+    elif args.subparser_name == "load":
+
+
+        worker = lillorgid.etl.l.solr.lib.Runner(
+            lillorgid.etl.l.solr.lib.Reader(),
+            lillorgid.etl.l.solr.lib.Writer()
+        )
+        worker.go()

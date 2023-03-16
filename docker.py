@@ -1,7 +1,6 @@
 import lillorgid.etl.logging
-import lillorgid.etl.l.psql.lib
 import lillorgid.etl.et.iati.datadump_code4iati
-import lillorgid.etl.l.psql.lib
+import lillorgid.etl.l.solr.lib
 import lillorgid.etl.et.indigo.scraper
 import lillorgid.etl.et.threesixtygiving.datastore
 
@@ -30,9 +29,9 @@ worker.go()
 del worker
 
 lillorgid.etl.logging.logger.info("Docker - Load all data!")
-worker = lillorgid.etl.l.psql.lib.Runner(
-    lillorgid.etl.l.psql.lib.Reader(),
-    lillorgid.etl.l.psql.lib.Writer()
+worker = lillorgid.etl.l.solr.lib.Runner(
+    lillorgid.etl.l.solr.lib.Reader(),
+    lillorgid.etl.l.solr.lib.Writer()
 )
 worker.go()
 del worker
