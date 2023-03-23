@@ -90,7 +90,7 @@ class Writer:
             for k, v in data_row.get('meta',{}).items():
                 post_data['add']['doc']['meta_'+k+"_s"] = v
 
-            r = requests.post(url, json=post_data, headers=headers)
+            r = requests.post(url, json=post_data, headers=headers, auth=requests.auth.HTTPBasicAuth(settings.SOLR_USERNAME, settings.SOLR_PASSWORD))
             print(r.json())
             r.raise_for_status()
 
@@ -191,6 +191,6 @@ def load_lists():
                     "commitWithin": 10000
                 }
             }
-            r = requests.post(url, json=post_data, headers=headers)
+            r = requests.post(url, json=post_data, headers=headers, auth=requests.auth.HTTPBasicAuth(settings.SOLR_USERNAME, settings.SOLR_PASSWORD))
             #print(r.json())
             r.raise_for_status()
