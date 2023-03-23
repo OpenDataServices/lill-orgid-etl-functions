@@ -25,7 +25,7 @@ class INDIGOScraper:
         # For each org
         with lillorgid.etl.et.lib.JSONLinesWriter(self.tmp_dir_name, os.path.join("indigo", "scraper", datetime.datetime.utcnow().isoformat())) as writer:
             for indigo_org_id in indigo_org_ids:
-                lillorgid.etl.logging.logger.info("INDIGOScraper Organisation " + indigo_org_id)
+                #lillorgid.etl.logging.logger.info("INDIGOScraper Organisation " + indigo_org_id)
                 r = requests.get("https://golab-indigo-data-store.herokuapp.com/app/api1/organisation/"+indigo_org_id)
                 r.raise_for_status()
                 org_ids = set()
