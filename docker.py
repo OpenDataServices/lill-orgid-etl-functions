@@ -10,7 +10,7 @@ lillorgid.etl.logging.python_logging_to_stdout()
 
 try:
     lillorgid.etl.logging.logger.info("Docker - Load Lists!")
-    lillorgid.etl.l.psql.lib.load_lists()
+    lillorgid.etl.l.solr.lib.load_lists()
 except Exception as e:
     lillorgid.etl.logging.logger.info("ERROR - " + str(e))
 
