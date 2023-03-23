@@ -9,7 +9,7 @@ import tempfile
 import sqlite3
 import requests
 import psycopg
-
+import urllib3
 
 
 class Reader:
@@ -61,7 +61,10 @@ class Reader:
 class Writer:
 
     def __init__(self):
-        pass
+        self.session = requests.Session()
+        adapter = requests.adapters.HTTPAdapter(max_retries=urllib3.Retry(total=10, backoff_factor=30, allowed_methods=False, status_forcelist=[429, 500, 502, 503, 504]))
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
 
     def save_data(self, data_standard, scraper, data_dump_id, data):
 
@@ -90,7 +93,7 @@ class Writer:
             for k, v in data_row.get('meta',{}).items():
                 post_data['add']['doc']['meta_'+k+"_s"] = v
 
-            r = requests.post(url, json=post_data, headers=headers, auth=requests.auth.HTTPBasicAuth(settings.SOLR_USERNAME, settings.SOLR_PASSWORD))
+            r = self.session.post(url, json=post_data, headers=headers, auth=requests.auth.HTTPBasicAuth(settings.SOLR_USERNAME, settings.SOLR_PASSWORD), timeout=(60,60))
             #print(r.json())
             r.raise_for_status()
 
