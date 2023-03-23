@@ -20,11 +20,13 @@ class ThreeSixtyGivingDataStore:
         list_and_id_extractor = lillorgid.etl.list_and_id_extractor.ListAndIdExtractor()
 
         with lillorgid.etl.et.lib.JSONLinesWriter(self.tmp_dir_name, os.path.join("threesixtygiving", "datastore", datetime.datetime.utcnow().isoformat())) as writer:
-            with psycopg.connect(settings.THREESIXTYGIVING_DATASTORE_POSTGRES_CONNECTION_STRING, row_factory=psycopg.rows.dict_row) as destination_conn:
-                with destination_conn.cursor() as destination_cursor:
+            with psycopg.connect(settings.THREESIXTYGIVING_DATASTORE_POSTGRES_CONNECTION_STRING, row_factory=psycopg.rows.dict_row) as source_conn:
+                with source_conn.cursor() as source_cursor:
 
-                    res = destination_cursor.execute("select data, grant_id from view_latest_grant")  #  where (data->'recipientOrganization'->0->'id')::text = '\"GB-CHC-1044940\"'
-                    for row in res.fetchall():
+                    source_cursor.execute("select data, grant_id from view_latest_grant")  #  where (data->'recipientOrganization'->0->'id')::text = '\"GB-CHC-1044940\"'
+
+                    row = source_cursor.fetchone()
+                    while row:
                         for recipient_organization in row['data'].get('recipientOrganization', []):
                             org_id = recipient_organization.get('id')
                             if org_id:
@@ -34,6 +36,7 @@ class ThreeSixtyGivingDataStore:
                                         'grant_id': row['grant_id']
                                     }
                                     writer.write(orgidlist, id, row['grant_id'], recipient_organization.get('name',''), url=None, meta_data=meta_data)
+                        row = source_cursor.fetchone()
 
                     # Funders - could do in block above or look at  db_funder table
                     # TODO
