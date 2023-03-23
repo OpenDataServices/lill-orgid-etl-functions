@@ -86,12 +86,12 @@ class Writer:
             }
 
 
-            print(data_row)
+            #print(data_row)
             for k, v in data_row.get('meta',{}).items():
                 post_data['add']['doc']['meta_'+k+"_s"] = v
 
             r = requests.post(url, json=post_data, headers=headers, auth=requests.auth.HTTPBasicAuth(settings.SOLR_USERNAME, settings.SOLR_PASSWORD))
-            print(r.json())
+            #print(r.json())
             r.raise_for_status()
 
 
