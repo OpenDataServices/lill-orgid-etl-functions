@@ -57,7 +57,9 @@ class IATIDataDump:
                                     iati_identifier = activity.find('iati-identifier').text.strip()
                                 for field_name in ['reporting-org','participating-org']:
                                     for org_reference_xml in activity.findall(field_name):
-                                        org_references[org_reference_xml.attrib.get('ref')] = org_reference_xml.find('narrative').text.strip()
+                                        i = org_reference_xml.attrib.get('ref')
+                                        n = org_reference_xml.find('narrative').text.strip() if org_reference_xml.find('narrative') != None and org_reference_xml.find('narrative').text != None else ""
+                                        org_references[i] = n
                                 # TODO look up all the other places org ID's could be and put in!
                                 # output info
                                 if iati_identifier:
